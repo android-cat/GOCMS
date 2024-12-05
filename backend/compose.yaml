@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: # ビルドに使うDockerファイルのパス
+      context: .
+      dockerfile: ./build/package/Dockerfile
+    volumes: # マウントディレクトリ
+      - ./:/app
+    env_file: # .envファイル
+      - ./build/package/.go_env
+    ports:
+      - 8080:8080
