@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: ./backend/build/package/Dockerfile
     volumes: # マウントディレクトリ
-      - ./:/app
+      - ./backend:/app
     env_file: # .envファイル
       - ./backend/build/package/.env
     ports:
