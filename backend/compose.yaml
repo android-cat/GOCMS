@@ -6,6 +6,6 @@ services:
     volumes: # マウントディレクトリ
       - ./:/app
     env_file: # .envファイル
-      - ./build/package/.go_env
+      - ./build/package/.env
     ports:
       - 8080:8080
