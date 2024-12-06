@@ -1,5 +1,5 @@
 services:
-  backend:
+  go-cms:
     build: # ビルドに使うDockerファイルのパス
       context: .
       dockerfile: ./backend/build/package/Dockerfile
@@ -9,8 +9,6 @@ services:
       - ./backend/build/package/.env
     ports:
       - 8080:8080
-    networks:
-      - backend
   db:
     build:
       dockerfile: ./mysql/build/Dockerfile
@@ -24,9 +22,5 @@ services:
       - ./mysql/db/initdata:/docker-entrypoint-initdb.d
       - db-data:/var/lib/mysql
       - ./mysql/db/my.cnf:/etc/mysql/conf.d/my.cnf
-    networks:
-      - backend
 volumes:
   db-data:
-networks:
-  backend:
