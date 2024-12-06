@@ -2,10 +2,10 @@ services:
   backend:
     build: # ビルドに使うDockerファイルのパス
       context: .
-      dockerfile: ./build/package/Dockerfile
+      dockerfile: ./backend/build/package/Dockerfile
     volumes: # マウントディレクトリ
       - ./:/app
     env_file: # .envファイル
-      - ./build/package/.env
+      - ./backend/build/package/.env
     ports:
       - 8080:8080
