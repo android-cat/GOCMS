@@ -9,3 +9,24 @@ services:
       - ./backend/build/package/.env
     ports:
       - 8080:8080
+    networks:
+      - backend
+  db:
+    build:
+      dockerfile: ./mysql/build/Dockerfile
+    environment:
+      MYSQL_USER: sample_user
+      MYSQL_DATABASE: sample_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql/db/initdata:/docker-entrypoint-initdb.d
+      - db-data:/var/lib/mysql
+      - ./mysql/db/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - backend
+volumes:
+  db-data:
+networks:
+  backend:
