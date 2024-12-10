@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン - GOCMS</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="min-h-screen flex bg-gray-100">
+  <div id="app" class="min-h-screen flex flex-col w-full">
+    <!-- トップバー -->
+    <div class="fixed top-0 left-0 right-0 z-50">
+      <div class="bg-black text-white px-6 py-3 flex justify-between items-center">
+        <div class="flex items-center">
+          <span class="text-2xl font-bold mr-4">GOCMS</span>
+          <nav class="space-x-4">
+            <a href="#" class="hover:text-gray-300">ダッシュボード</a>
+            <a href="#" class="hover:text-gray-300">コンテンツ表示</a>
+            <a href="#" class="hover:text-gray-300">設定</a>
+          </nav>
+        </div>
+        <div class="flex items-center">
+          <span class="mr-4">{{ currentUser.name }}</span>
+          <button
+            @click="logout"
+            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          >
+            ログアウト
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="flex-1 flex justify-center items-center pt-20">
+      <div class="w-full max-w-sm p-6 bg-white shadow-lg rounded-lg">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">ログイン</h1>
+        <form action="/login" method="POST" class="space-y-4">
+          <button
+            type="submit"
+            class="w-full flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+          >
+            <svg
+              class="w-5 h-5 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 48 48"
+            >
+              <path
+                fill="#EA4335"
+                d="M24 9.5c3.5 0 6.6 1.3 9 3.5l6.6-6.6C35.3 3 29.9 0 24 0 14.6 0 6.8 5.8 3.3 14l7.9 6.1C12.7 13 17.9 9.5 24 9.5z"
+              />
+              <path
+                fill="#4285F4"
+                d="M46.5 24c0-1.6-.1-3.1-.4-4.5H24v9.3h12.7c-.5 2.7-1.9 5-4 6.6l6.5 5c3.8-3.5 6-8.8 6-15.4z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M10.7 28.5c-.8-2.3-1.2-4.7-1.2-7.2 0-2.5.4-5 1.2-7.2L3.3 8c-2.1 4.1-3.3 8.7-3.3 13.5s1.2 9.4 3.3 13.5l7.4-6.5z"
+              />
+              <path
+                fill="#34A853"
+                d="M24 48c6.5 0 11.9-2.1 15.8-5.7l-7.5-6.1c-2.1 1.5-4.9 2.3-8.3 2.3-6.4 0-11.8-4.3-13.7-10.1l-7.8 6C6.9 42.6 14.9 48 24 48z"
+              />
+              <path fill="none" d="M0 0h48v48H0z" />
+            </svg>
+            Googleでログイン
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          currentUser: { name: "ユーザー名" },
+          currentMenu: null,
+        };
+      },
+      methods: {
+        logout() {
+          alert("ログアウトしました");
+        },
+        selectMenu(menu) {
+          this.currentMenu = menu.id;
+        },
+      },
+    }).mount("#app");
+  </script>
+</body>
+</html>

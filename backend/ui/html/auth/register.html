@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登録 - GOCMS</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="min-h-screen flex bg-gray-100">
+  <div id="app" class="min-h-screen flex flex-col w-full">
+    <!-- トップバー -->
+    <div class="fixed top-0 left-0 right-0 z-50">
+      <div class="bg-black text-white px-6 py-3 flex justify-between items-center">
+        <div class="flex items-center">
+          <span class="text-2xl font-bold mr-4">GOCMS</span>
+          <nav class="space-x-4">
+            <a href="#" class="hover:text-gray-300">ダッシュボード</a>
+            <a href="#" class="hover:text-gray-300">コンテンツ表示</a>
+            <a href="#" class="hover:text-gray-300">設定</a>
+          </nav>
+        </div>
+        <div class="flex items-center">
+          <span class="mr-4">{{ currentUser.name }}</span>
+          <button
+            @click="logout"
+            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          >
+            ログアウト
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="flex-1 flex justify-center items-center pt-20">
+      <div class="w-full max-w-sm p-6 bg-white shadow-lg rounded-lg">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">登録</h1>
+        <form @submit.prevent="handleRegister" class="space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <input
+              type="text"
+              id="name"
+              v-model="form.name"
+              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="名前を入力"
+            />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+            <input
+              type="email"
+              id="email"
+              v-model="form.email"
+              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="メールアドレスを入力"
+            />
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+            <input
+              type="password"
+              id="password"
+              v-model="form.password"
+              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="パスワードを入力"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+          >
+            登録
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          currentUser: { name: "ゲスト" },
+          menuItems: [
+            { id: 1, label: "ホーム" },
+            { id: 2, label: "ユーザー管理" },
+            { id: 3, label: "設定" },
+          ],
+          currentMenu: null,
+          form: {
+            name: "",
+            email: "",
+            password: "",
+          },
+        };
+      },
+      methods: {
+        handleRegister() {
+          alert(`名前: ${this.form.name}, メール: ${this.form.email}`);
+          // ここで登録処理を追加
+        },
+        logout() {
+          alert("ログアウトしました");
+        },
+        selectMenu(menu) {
+          this.currentMenu = menu.id;
+        },
+      },
+    }).mount("#app");
+  </script>
+</body>
+</html>

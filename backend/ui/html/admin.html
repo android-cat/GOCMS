@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>GOCMS 管理画面</title>
+    <!-- Vue 3のCDNリンク -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Tailwind CSSのCDNリンク -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen flex">
+        <!-- トップバー -->
+        <div class="fixed top-0 left-0 right-0 z-50">
+            <div class="bg-black text-white px-6 py-3 flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold mr-4">GOCMS</span>
+                    <nav class="space-x-4">
+                        <a href="#" class="hover:text-gray-300">ダッシュボード</a>
+                        <a href="#" class="hover:text-gray-300">コンテンツ表示</a>
+                        <a href="#" class="hover:text-gray-300">設定</a>
+                    </nav>
+                </div>
+                <div class="flex items-center">
+                    <span class="mr-4">{{ currentUser.name }}</span>
+                    <button 
+                        @click="logout" 
+                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                        ログアウト
+                    </button>
+                </div>
+            </div>
+        </div>
+        <nav class="w-64 bg-white shadow-md p-4 pt-20">
+            <h2 class="text-xl font-bold mb-6">管理画面</h2>
+            <ul>
+                <li 
+                    v-for="menu in menuItems" 
+                    :key="menu.id" 
+                    class="mb-2"
+                >
+                    <button 
+                        @click="selectMenu(menu)" 
+                        :class="[
+                            'w-full text-left p-2 rounded',
+                            currentMenu === menu.id 
+                                ? 'bg-blue-500 text-white' 
+                                : 'hover:bg-gray-200'
+                        ]"
+                    >
+                        {{ menu.label }}
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="flex-grow p-8 pt-20">
+            <header class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold">
+                    {{ getCurrentMenuLabel() }}
+                </h1>
+            </header>
+
+            <!-- ダッシュボード -->
+            <section v-if="currentMenu === 'dashboard'" class="grid grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="font-bold text-gray-600">総ユーザー数</h3>
+                    <p class="text-2xl text-blue-600">{{ stats.totalUsers }}</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="font-bold text-gray-600">今月の売上</h3>
+                    <p class="text-2xl text-green-600">
+                        ¥{{ stats.monthlySales.toLocaleString() }}
+                    </p>
+                </div>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="font-bold text-gray-600">新規注文</h3>
+                    <p class="text-2xl text-purple-600">{{ stats.newOrders }}</p>
+                </div>
+            </section>
+
+            <!-- ユーザー管理 -->
+            <section v-if="currentMenu === 'users'">
+                <div class="bg-white shadow rounded">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 text-left">ID</th>
+                                <th class="p-3 text-left">名前</th>
+                                <th class="p-3 text-left">メール</th>
+                                <th class="p-3 text-left">アクション</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr 
+                                v-for="user in users" 
+                                :key="user.id" 
+                                class="border-b hover:bg-gray-50"
+                            >
+                                <td class="p-3">{{ user.id }}</td>
+                                <td class="p-3">{{ user.name }}</td>
+                                <td class="p-3">{{ user.email }}</td>
+                                <td class="p-3">
+                                    <button 
+                                        @click="editUser(user)" 
+                                        class="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                                    >
+                                        編集
+                                    </button>
+                                    <button 
+                                        @click="deleteUser(user.id)" 
+                                        class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    >
+                                        削除
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive } = Vue
+
+        createApp({
+            setup() {
+                // ログインユーザー情報
+                const currentUser = reactive({
+                    name: '管理者',
+                    role: 'admin'
+                })
+
+                // メニューアイテム
+                const menuItems = [
+                    { id: 'dashboard', label: 'ダッシュボード' },
+                    { id: 'users', label: 'ユーザー管理' },
+                    { id: 'contents', label: 'コンテンツ管理' },
+                    { id: 'products', label: '商品管理' }
+                ]
+
+                // 現在選択されているメニュー
+                const currentMenu = ref('dashboard')
+
+                // ダミーのステータス情報
+                const stats = reactive({
+                    totalUsers: 1254,
+                    monthlySales: 1245670,
+                    newOrders: 42
+                })
+
+                // ダミーのユーザーデータ
+                const users = ref([
+                    { id: 1, name: '田中 太郎', email: 'tanaka@example.com' },
+                    { id: 2, name: '山田 花子', email: 'yamada@example.com' },
+                    { id: 3, name: '鈴木 次郎', email: 'suzuki@example.com' }
+                ])
+
+                // メソッド群
+                const selectMenu = (menu) => {
+                    currentMenu.value = menu.id
+                }
+
+                const getCurrentMenuLabel = () => {
+                    const currentMenuObj = menuItems.find(menu => menu.id === currentMenu.value)
+                    return currentMenuObj ? currentMenuObj.label : ''
+                }
+
+                const logout = () => {
+                    alert('ログアウトしました')
+                }
+
+                const editUser = (user) => {
+                    alert(`${user.name}の編集`)
+                }
+
+                const deleteUser = (userId) => {
+                    users.value = users.value.filter(user => user.id !== userId)
+                }
+
+                return {
+                    currentUser,
+                    menuItems,
+                    currentMenu,
+                    stats,
+                    users,
+                    selectMenu,
+                    getCurrentMenuLabel,
+                    logout,
+                    editUser,
+                    deleteUser
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
