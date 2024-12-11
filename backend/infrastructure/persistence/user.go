@@ -26,8 +26,8 @@ func (up *userPersistence) AllUsers() ([]model.User, error) {
 
 func (up *userPersistence) GetUsersID(id int) ([]model.User, error) {
 	users := []model.User{}
-	up.db = up.db.Where("id = ?",id)
-	res := up.db.Find(&users)
+	up.db = up.db.Where("id = ?", id)
+	res := up.db.Where("id = ?", id).Find(&users)
 	if res.Error != nil {
 		return []model.User{}, res.Error
 	}
@@ -36,7 +36,7 @@ func (up *userPersistence) GetUsersID(id int) ([]model.User, error) {
 
 func (up *userPersistence) GetUsersEmail(email string) ([]model.User, error) {
 	users := []model.User{}
-	up.db = up.db.Where("email = ?",email)
+	up.db = up.db.Where("email = ?", email)
 	res := up.db.Find(&users)
 	if res.Error != nil {
 		return []model.User{}, res.Error
@@ -44,3 +44,14 @@ func (up *userPersistence) GetUsersEmail(email string) ([]model.User, error) {
 	return users, nil
 }
 
+func (up *userPersistence) CreateUser(user *model.User) error {
+	if err := user.SetPassword(user.Password); err != nil {
+		return err
+	}
+
+	res := up.db.Create(user)
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+}
