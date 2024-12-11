@@ -12,7 +12,6 @@ import (
 
 func NewRouter(db *gorm.DB) *gin.Engine {
 	router := gin.Default()
-	authGroup := router.Group("/admin")
 
 	// 静的ファイルの提供
 	router.Static("/static", "./ui/html")
@@ -23,6 +22,7 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 	// ハンドラーのインスタンスを作成
 	loginHandler := handler.NewLoginHandler(db)
 	registerHandler := handler.NewRegisterHandler(db)
+	logoutHandler := handler.NewLogoutHandler()
 
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.File("./ui/html/top.html")
@@ -38,6 +38,9 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 	})
 	router.POST("/register", registerHandler.Register)
 
+	router.POST("/logout", logoutHandler.Logout)
+	
+	authGroup := router.Group("/admin")
 	authGroup.Use(middleware.IsLoggedIn())
 	{
 		authGroup.GET("/dashboard", func(ctx *gin.Context) {
