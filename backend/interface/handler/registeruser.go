@@ -3,6 +3,7 @@ package handler
 import (
 	"go-cms/usecase"
 	"net/http"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -30,6 +31,7 @@ func (rh *RegisterHandler) Register(ctx *gin.Context) {
 
 	err := rh.RegisterUserUseCase.Register(email, password, name)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
 	}

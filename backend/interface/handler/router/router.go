@@ -23,6 +23,7 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 	loginHandler := handler.NewLoginHandler(db)
 	registerHandler := handler.NewRegisterHandler(db)
 	logoutHandler := handler.NewLogoutHandler()
+	userHandler := handler.NewUserHandler(db)
 
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.File("./ui/html/top.html")
@@ -46,6 +47,8 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		authGroup.GET("/dashboard", func(ctx *gin.Context) {
 			ctx.File("./ui/html/admin.html")
 		})
+		authGroup.GET("/userinfo", userHandler.GetUserInfo)
+		authGroup.GET("/users", userHandler.GetAllUsers)
 	}
 
 	return router

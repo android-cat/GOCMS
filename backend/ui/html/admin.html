@@ -16,9 +16,10 @@
                 <div class="flex items-center">
                     <span class="text-2xl font-bold mr-4">GOCMS</span>
                     <nav class="space-x-4">
-                        <a href="#" class="hover:text-gray-300">ダッシュボード</a>
-                        <a href="#" class="hover:text-gray-300">コンテンツ表示</a>
-                        <a href="#" class="hover:text-gray-300">設定</a>
+                        <a href="#" class="hover:text-gray-300" @click="selectMenu('dashboard')">ダッシュボード</a>
+                        <a href="#" class="hover:text-gray-300" @click="selectMenu('contents')">コンテンツ表示</a>
+                        <a href="#" class="hover:text-gray-300" @click="selectMenu('settings')">設定</a>
+                        <a href="#" class="hover:text-gray-300" @click="selectMenu('users')">ユーザー管理</a>
                     </nav>
                 </div>
                 <div class="flex items-center">
@@ -35,57 +36,43 @@
         <nav class="w-64 bg-white shadow-md p-4 pt-20">
             <h2 class="text-xl font-bold mb-6">管理画面</h2>
             <ul>
-                <li 
-                    v-for="menu in menuItems" 
-                    :key="menu.id" 
-                    class="mb-2"
-                >
-                    <button 
-                        @click="selectMenu(menu)" 
-                        :class="[
-                            'w-full text-left p-2 rounded',
-                            currentMenu === menu.id 
-                                ? 'bg-blue-500 text-white' 
-                                : 'hover:bg-gray-200'
-                        ]"
-                    >
-                        {{ menu.label }}
-                    </button>
+                <li v-for="item in menuItems" :key="item.id" class="mb-4">
+                    <a href="#" class="text-gray-700 hover:text-gray-900" @click="selectMenu(item.id)">{{ item.label }}</a>
                 </li>
             </ul>
         </nav>
-
-        <main class="flex-grow p-8 pt-20">
-            <header class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold">
-                    {{ getCurrentMenuLabel() }}
-                </h1>
-            </header>
-
-            <!-- ダッシュボード -->
-            <section v-if="currentMenu === 'dashboard'" class="grid grid-cols-3 gap-4">
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold text-gray-600">総ユーザー数</h3>
-                    <p class="text-2xl text-blue-600">{{ stats.totalUsers }}</p>
-                </div>
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold text-gray-600">今月の売上</h3>
-                    <p class="text-2xl text-green-600">
-                        ¥{{ stats.monthlySales.toLocaleString() }}
-                    </p>
-                </div>
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold text-gray-600">新規注文</h3>
-                    <p class="text-2xl text-purple-600">{{ stats.newOrders }}</p>
+        <main class="flex-1 p-8 pt-20">
+            <section v-if="currentMenu === 'dashboard'">
+                <h2 class="text-2xl font-bold mb-4">ダッシュボード</h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-white p-4 shadow rounded">
+                        <h3 class="text-lg font-bold">ユーザー数</h3>
+                        <p class="text-2xl">{{ stats.totalUsers }}</p>
+                    </div>
+                    <div class="bg-white p-4 shadow rounded">
+                        <h3 class="text-lg font-bold">月間売上</h3>
+                        <p class="text-2xl">{{ stats.monthlySales }}</p>
+                    </div>
+                    <div class="bg-white p-4 shadow rounded">
+                        <h3 class="text-lg font-bold">新規注文</h3>
+                        <p class="text-2xl">{{ stats.newOrders }}</p>
+                    </div>
                 </div>
             </section>
-
-            <!-- ユーザー管理 -->
+            <section v-if="currentMenu === 'contents'">
+                <h2 class="text-2xl font-bold mb-4">コンテンツ管理</h2>
+                <!-- コンテンツ管理の内容をここに追加 -->
+            </section>
+            <section v-if="currentMenu === 'settings'">
+                <h2 class="text-2xl font-bold mb-4">設定</h2>
+                <!-- 設定の内容をここに追加 -->
+            </section>
             <section v-if="currentMenu === 'users'">
-                <div class="bg-white shadow rounded">
-                    <table class="w-full">
+                <h2 class="text-2xl font-bold mb-4">ユーザー管理</h2>
+                <div class="bg-white shadow rounded p-4">
+                    <table class="w-full bg-white">
                         <thead>
-                            <tr class="bg-gray-100">
+                            <tr class="">
                                 <th class="p-3 text-left">ID</th>
                                 <th class="p-3 text-left">名前</th>
                                 <th class="p-3 text-left">メール</th>
@@ -98,22 +85,12 @@
                                 :key="user.id" 
                                 class="border-b hover:bg-gray-50"
                             >
-                                <td class="p-3">{{ user.id }}</td>
+                                <td class="p-3">{{ user.ID }}</td>
                                 <td class="p-3">{{ user.name }}</td>
                                 <td class="p-3">{{ user.email }}</td>
                                 <td class="p-3">
-                                    <button 
-                                        @click="editUser(user)" 
-                                        class="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
-                                    >
-                                        編集
-                                    </button>
-                                    <button 
-                                        @click="deleteUser(user.id)" 
-                                        class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                        削除
-                                    </button>
+                                    <button @click="editUser(user)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">編集</button>
+                                    <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2">削除</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -124,22 +101,22 @@
     </div>
 
     <script>
-        const { createApp, ref, reactive } = Vue
+        const { createApp, ref, reactive, onMounted } = Vue
 
         createApp({
             setup() {
                 // ログインユーザー情報
                 const currentUser = reactive({
-                    name: '管理者',
-                    role: 'admin'
+                    name: '',
+                    role: ''
                 })
 
                 // メニューアイテム
                 const menuItems = [
                     { id: 'dashboard', label: 'ダッシュボード' },
-                    { id: 'users', label: 'ユーザー管理' },
                     { id: 'contents', label: 'コンテンツ管理' },
-                    { id: 'products', label: '商品管理' }
+                    { id: 'settings', label: '設定' },
+                    { id: 'users', label: 'ユーザー管理' }
                 ]
 
                 // 現在選択されているメニュー
@@ -152,16 +129,15 @@
                     newOrders: 42
                 })
 
-                // ダミーのユーザーデータ
-                const users = ref([
-                    { id: 1, name: '田中 太郎', email: 'tanaka@example.com' },
-                    { id: 2, name: '山田 花子', email: 'yamada@example.com' },
-                    { id: 3, name: '鈴木 次郎', email: 'suzuki@example.com' }
-                ])
+                // ユーザーデータ
+                const users = ref([])
 
                 // メソッド群
-                const selectMenu = (menu) => {
-                    currentMenu.value = menu.id
+                const selectMenu = (menuId) => {
+                    currentMenu.value = menuId
+                    if (menuId === 'users') {
+                        fetchUsers()
+                    }
                 }
 
                 const getCurrentMenuLabel = () => {
@@ -178,7 +154,6 @@
                     })
                     .then(response => {
                         if (response.ok) {
-                            alert('ログアウトしました');
                             window.location.href = '/login';
                         } else {
                             throw new Error('ログアウトに失敗しました');
@@ -189,6 +164,49 @@
                     });
                 }
 
+                const fetchUserInfo = () => {
+                    fetch('/admin/userinfo', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(data => {
+                        console.log(data)
+                        if (data) {
+                            currentUser.name = data.name;
+                            currentUser.role = data.role;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user info:', error);
+                    });
+                }
+
+                const fetchUsers = () => {
+                    fetch('/admin/users', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        users.value = data
+                    })
+                    .catch(error => {
+                        console.error('Error fetching users:', error)
+                    })
+                }
+
                 const editUser = (user) => {
                     alert(`${user.name}の編集`)
                 }
@@ -196,6 +214,12 @@
                 const deleteUser = (userId) => {
                     users.value = users.value.filter(user => user.id !== userId)
                 }
+
+                // 初期化処理
+                onMounted(() => {
+                    fetchUserInfo()
+                    currentMenu.value = 'dashboard'
+                })
 
                 return {
                     currentUser,

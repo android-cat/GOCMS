@@ -3,6 +3,7 @@ package handler
 import (
 	"go-cms/usecase"
 	"net/http"
+	"log"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -30,6 +31,7 @@ func (lh *LoginHandler) Login(ctx *gin.Context) {
 
 	tokenString, err := lh.LoginUseCase.Login(email, password)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}

@@ -30,6 +30,9 @@ func isAuthenticated(ctx *gin.Context) bool {
 		ctx.Abort()
 		return false
 	}
+
+	// クレームからuserIDを取得してコンテキストに設定
+    ctx.Set("userID", claims.UserID)
 	return true
 }
 

@@ -28,12 +28,10 @@ func (uc *LoginUseCase) Login(email, password string) (string, error) {
 		return "", errors.New("email and password are required")
 	}
 
-	users, err := uc.UserRepo.GetUsersEmail(email)
-	if err != nil || len(users) == 0 {
+	user, err := uc.UserRepo.GetUserByEmail(email)
+	if err != nil {
 		return "", errors.New("invalid email or password")
 	}
-
-	user := users[0]
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return "", errors.New("invalid email or password")
