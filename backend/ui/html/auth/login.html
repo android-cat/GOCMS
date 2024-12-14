@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン - GOCMS</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="min-h-screen flex bg-gray-100">
+  <div id="app" class="min-h-screen flex flex-col w-full">
+    <!-- トップバー -->
+    <div class="fixed top-0 left-0 right-0 z-50">
+      <div class="bg-black text-white px-6 py-3 flex justify-between items-center">
+        <div class="flex items-center">
+          <span class="text-2xl font-bold mr-4">GOCMS</span>
+          <nav class="space-x-4">
+            <a href="/admin/dashboard" class="hover:text-gray-300">ダッシュボード</a>
+            <a href="/top" class="hover:text-gray-300">コンテンツ表示</a>
+            <a href="#" class="hover:text-gray-300">設定</a>
+          </nav>
+        </div>
+        <div class="flex items-center">
+          <span class="mr-4">{{ currentUser.name }}</span>
+          <button
+            @click="logout"
+            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          >
+            ログアウト
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="flex-1 flex justify-center items-center pt-20">
+      <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">ログイン</h2>
+        <form @submit.prevent="login">
+          <div class="mb-4">
+            <label for="email" class="block text-gray-700">メールアドレス</label>
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-opacity-50"
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label for="password" class="block text-gray-700">パスワード</label>
+            <input
+              type="password"
+              id="password"
+              v-model="password"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-opacity-50"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            ログイン
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          email: '',
+          password: '',
+          currentUser: {
+            name: 'ゲスト'
+          }
+        };
+      },
+      methods: {
+        login() {
+          // ログイン処理をここに追加
+          fetch('/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              email: this.email,
+              password: this.password,
+            }),
+          })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('ログインに失敗しました');
+            }
+          })
+          .then(data => {
+              alert('ログインに成功しました');
+              // ログイン成功後の処理をここに追加
+              window.location.href = '/admin/dashboard';
+          })
+          .catch(error => {
+            alert(error.message);
+          });
+        },
+        logout() {
+            fetch('/logout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            })
+            .then(response => {
+              if (response.ok) {
+                alert('ログアウトしました');
+                window.location.href = '/login';
+              } else {
+                throw new Error('ログアウトに失敗しました');
+              }
+            })
+            .catch(error => {
+              alert(error.message);
+            });
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
