@@ -72,7 +72,7 @@
                 <div class="bg-white shadow rounded p-4">
                     <table class="w-full bg-white">
                         <thead>
-                            <tr class="">
+                            <tr class="bg-gray-100">
                                 <th class="p-3 text-left">ID</th>
                                 <th class="p-3 text-left">名前</th>
                                 <th class="p-3 text-left">メール</th>
@@ -90,7 +90,7 @@
                                 <td class="p-3">{{ user.email }}</td>
                                 <td class="p-3">
                                     <button @click="editUser(user)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">編集</button>
-                                    <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2">削除</button>
+                                    <button @click="deleteUser(user.ID)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2">削除</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -98,19 +98,41 @@
                 </div>
             </section>
         </main>
+
+        <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white p-6 rounded shadow-lg">
+                <h2 class="text-xl font-bold mb-4">ユーザー編集</h2>
+                <div class="mb-4">
+                    <label class="block text-gray-700">ID</label>
+                    <input v-model="editingUser.ID" class="w-full p-2 border rounded" disabled />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">名前</label>
+                    <input v-model="editingUser.name" class="w-full p-2 border rounded" />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">メール</label>
+                    <input v-model="editingUser.email" class="w-full p-2 border rounded" />
+                </div>
+                <div class="flex justify-end">
+                    <button @click="closeModal" class="bg-gray-500 text-white px-3 py-1 rounded mr-2">キャンセル</button>
+                    <button @click="saveUser" class="bg-blue-500 text-white px-3 py-1 rounded">保存</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const { createApp, ref, reactive, onMounted } = Vue
+        const { createApp, ref, reactive, onMounted, watch } = Vue
 
         createApp({
             setup() {
                 // ログインユーザー情報
                 const currentUser = reactive({
-                    name: '',
-                    role: ''
+                    name: 'ゲスト'
                 })
-
+                
                 // メニューアイテム
                 const menuItems = [
                     { id: 'dashboard', label: 'ダッシュボード' },
@@ -132,17 +154,16 @@
                 // ユーザーデータ
                 const users = ref([])
 
+                // 編集対象のユーザー
+                const editingUser = ref(null)
+                const showModal = ref(false)
+
                 // メソッド群
                 const selectMenu = (menuId) => {
                     currentMenu.value = menuId
                     if (menuId === 'users') {
                         fetchUsers()
                     }
-                }
-
-                const getCurrentMenuLabel = () => {
-                    const currentMenuObj = menuItems.find(menu => menu.id === currentMenu.value)
-                    return currentMenuObj ? currentMenuObj.label : ''
                 }
 
                 const logout = () => {
@@ -179,10 +200,8 @@
                         }
                     })
                     .then(data => {
-                        console.log(data)
                         if (data) {
                             currentUser.name = data.name;
-                            currentUser.role = data.role;
                         }
                     })
                     .catch(error => {
@@ -199,7 +218,6 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data)
                         users.value = data
                     })
                     .catch(error => {
@@ -207,12 +225,51 @@
                     })
                 }
 
+                const closeModal = () => {
+                    showModal.value = false
+                    editingUser.value = null
+                }
+
                 const editUser = (user) => {
-                    alert(`${user.name}の編集`)
+                    editingUser.value = { ...user }
+                    showModal.value = true
+                }
+
+                const saveUser = () => {
+                    fetch(`/admin/users/${editingUser.value.ID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(editingUser.value),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showModal.value = false
+                        fetchUsers() // ユーザーリストを再取得して表を更新
+                    })
+                    .catch(error => {
+                        console.error('Error updating user:', error)
+                    })
                 }
 
                 const deleteUser = (userId) => {
-                    users.value = users.value.filter(user => user.id !== userId)
+                    fetch(`/admin/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            fetchUsers() // ユーザーリストを再取得して表を更新
+                        } else {
+                            throw new Error('Failed to delete user')
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting user:', error)
+                    })
                 }
 
                 // 初期化処理
@@ -227,10 +284,13 @@
                     currentMenu,
                     stats,
                     users,
+                    editingUser,
+                    showModal,
                     selectMenu,
-                    getCurrentMenuLabel,
                     logout,
                     editUser,
+                    closeModal,
+                    saveUser,
                     deleteUser
                 }
             }
