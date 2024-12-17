@@ -38,7 +38,7 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		ctx.File("./ui/html/auth/register.html")
 	})
 	router.POST("/register", registerHandler.Register)
-
+	router.GET("/verify", userHandler.VerifyEmail)
 	router.POST("/logout", logoutHandler.Logout)
 	
 	authGroup := router.Group("/admin")

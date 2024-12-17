@@ -18,14 +18,20 @@ func NewRegisterUserUseCase(db *gorm.DB) *RegisterUserUseCase {
     }
 }
 
-func (uc *RegisterUserUseCase) Register(email, password, name string) error {
+func (uc *RegisterUserUseCase) Register(email string, password string, name string,token string) error {
     // ユーザーを作成
-    user := &model.User{
-        Email:    email,
-        Password: password,
-        Name:     name,
+    user := model.User{
+        Email: email,
+        Password: password, // パスワードはハッシュ化する必要があります
+        Name: name,
+        EmailVerified : false,
+        VerificationToken: token,
     }
 
     // ユーザーをデータベースに保存
-    return uc.UserRepo.CreateUser(user)
+    return uc.UserRepo.CreateUser(&user)
+}
+
+func (uc *UserUseCase) VerifyEmail(token string) error {
+    return uc.UserRepo.VerifyEmail(token)
 }
