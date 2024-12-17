@@ -22,5 +22,10 @@ services:
       - ./mysql/db/initdata:/docker-entrypoint-initdb.d
       - db-data:/var/lib/mysql
       - ./mysql/db/my.cnf:/etc/mysql/conf.d/my.cnf
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
 volumes:
   db-data:

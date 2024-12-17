@@ -9,6 +9,8 @@ type User struct {
 	Email string `json:"email" gorm:"unique"`
 	Password string `json:"password"`
 	Name	string	`json:"name"`
+	EmailVerified     bool   `gorm:"default:false"`
+    VerificationToken string `gorm:"size:255"`
 }
 
 func hashPassword(password string) (string, error) {

@@ -50,8 +50,6 @@ func (up *userPersistence) CreateUser(user *model.User) error {
             return fmt.Errorf("failed to hash password: %w", err)
         }
         
-        user.Password = ""
-        
         // ユーザーの作成
         if err := tx.Create(user).Error; err != nil {
             return fmt.Errorf("failed to create user: %w", err)
@@ -59,4 +57,21 @@ func (up *userPersistence) CreateUser(user *model.User) error {
         
         return nil
     })
+}
+
+func (up *userPersistence) VerifyEmail(token string) error {
+	user := model.User{}
+	res := up.db.Session(&gorm.Session{}).Where("verification_token = ?", token).Find(&user)
+	if res.Error != nil {
+		return res.Error
+	}
+	
+	user.EmailVerified = true
+	user.VerificationToken = ""
+	
+	if err := up.db.Session(&gorm.Session{}).Save(&user).Error; err != nil {
+		return err
+	}
+	
+	return nil
 }

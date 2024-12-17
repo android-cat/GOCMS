@@ -7,5 +7,6 @@ type UserRepository interface {
 	GetUserByID(uint) (model.User, error)
 	GetUserByEmail(string) (model.User, error)
 	CreateUser(*model.User) error
+	VerifyEmail(string) error
 }
 

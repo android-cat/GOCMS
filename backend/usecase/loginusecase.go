@@ -33,6 +33,10 @@ func (uc *LoginUseCase) Login(email, password string) (string, error) {
 		return "", errors.New("invalid email or password")
 	}
 
+	if !user.EmailVerified {
+        return "", errors.New("email not verified")
+    }
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return "", errors.New("invalid email or password")
 	}

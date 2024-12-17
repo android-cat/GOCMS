@@ -46,3 +46,20 @@ func (uh *UserHandler) GetAllUsers(ctx *gin.Context) {
 
     ctx.JSON(http.StatusOK, users)
 }
+
+func (uh *UserHandler) VerifyEmail(ctx *gin.Context) {
+    token := ctx.Query("token")
+    if token == "" {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Verification token is required"})
+        return
+    }
+
+    err := uh.UserUseCase.VerifyEmail(token)
+    if err != nil {
+        log.Println(err)
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify email"})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, gin.H{"message": "メール認証に成功しました。ログインページに移動してログインしてください。"})
+}
