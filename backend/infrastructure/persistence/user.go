@@ -60,3 +60,21 @@ func (up *userPersistence) CreateUser(user *model.User) error {
         return nil
     })
 }
+func (up *userPersistence) UpdateUser(user *model.User) error {	
+	return up.db.Transaction(func(tx *gorm.DB) error {
+		// ユーザーの更新
+		if err := tx.Save(user).Error; err != nil {
+			return fmt.Errorf("failed to update user: %w", err)
+		}
+		
+		return nil
+	})
+}
+
+func (up *userPersistence) DeleteUserByID(id uint) error {
+	res := up.db.Session(&gorm.Session{}).Where("id = ?", id).Delete(&model.User{})
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+}
