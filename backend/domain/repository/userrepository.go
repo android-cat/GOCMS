@@ -8,5 +8,7 @@ type UserRepository interface {
 	GetUserByEmail(string) (model.User, error)
 	CreateUser(*model.User) error
 	VerifyEmail(string) error
+    UpdateUser(*model.User) error
+    DeleteUserByID(uint) error
 }
 

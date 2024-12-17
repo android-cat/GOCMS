@@ -49,6 +49,8 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		})
 		authGroup.GET("/userinfo", userHandler.GetUserInfo)
 		authGroup.GET("/users", userHandler.GetAllUsers)
+		authGroup.PUT("/users/:id", userHandler.UpdateUser)
+		authGroup.DELETE("/users/:id", userHandler.DeleteUser)
 	}
 
 	return router
